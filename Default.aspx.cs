@@ -1,17 +1,32 @@
-﻿using CellPhoneWebXml;
 using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web.UI;
 using System.Web.Services;
 
-public partial class _Default : System.Web.UI.Page 
+public partial class _Default : Page
 {
-    protected void Page_Load(object sender, EventArgs e)
-    {
-    }
+protected void Page_Load(object sender, EventArgs e)
+{
+}
 
-    [WebMethod]
-    public static string GetMobileCodeInfo(string code)
-    {
-        string result = new MobileCodeWS().getMobileCodeInfo(code, "");
-        return result;
-    }
+[System.Web.Services.WebMethod]
+public static async Task<string> ObtenirInfosMobile(string code)
+{
+using (HttpClient client = new HttpClient())
+{
+try
+{
+string url = $"https://api.numlookupapi.com/v1/validate/{code}";
+var response = await client.GetAsync(url);
+response.EnsureSuccessStatusCode();
+string responseBody = await response.Content.ReadAsStringAsync();
+return responseBody;
+}
+catch (Exception ex)
+{
+return $"Erreur : {ex.Message}";
+}
+}
+}
 }
